@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace LAM.BotFramework
+namespace LAM.BotFramework.Code
 {
     public class NextQuestion
     {

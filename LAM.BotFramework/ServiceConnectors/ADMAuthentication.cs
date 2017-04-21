@@ -41,29 +41,30 @@ namespace LAM.BotFramework.ServiceConnectors
             this.clientId = clientId;
             this.clientSecret = clientSecret;
             if (string.IsNullOrEmpty(clientId)) {
-                this.request = "";
-                this.token = null;
+                request = "";
+                token = null;
             }
             else
             {
                 //If clientid or client secret has special characters, encode before sending request
-                this.request = string.Format("grant_type=client_credentials&client_id={0}&client_secret={1}&scope=http://api.microsofttranslator.com", HttpUtility.UrlEncode(clientId), HttpUtility.UrlEncode(clientSecret));
-                this.token = HttpPost(DatamarketAccessUri, this.request);
+                request =
+                    $"grant_type=client_credentials&client_id={HttpUtility.UrlEncode(clientId)}&client_secret={HttpUtility.UrlEncode(clientSecret)}&scope=http://api.microsofttranslator.com";
+                token = HttpPost(DatamarketAccessUri, request);
                 //renew the token every specfied minutes
                 accessTokenRenewer = new Timer(new TimerCallback(OnTokenExpiredCallback), this, TimeSpan.FromMinutes(RefreshTokenDuration), TimeSpan.FromMilliseconds(-1));
             }
         }
         public AdmAccessToken GetAccessToken()
         {
-            return this.token;
+            return token;
         }
         private void RenewAccessToken()
         {
-            AdmAccessToken newAccessToken = HttpPost(DatamarketAccessUri, this.request);
+            AdmAccessToken newAccessToken = HttpPost(DatamarketAccessUri, request);
             //swap the new token with old one
             //Note: the swap is thread unsafe
-            this.token = newAccessToken;
-            Console.WriteLine(string.Format("Renewed token for user: {0} is: {1}", this.clientId, this.token.access_token));
+            token = newAccessToken;
+            Console.WriteLine($"Renewed token for user: {clientId} is: {token.access_token}");
         }
         private void OnTokenExpiredCallback(object stateInfo)
         {
@@ -73,7 +74,7 @@ namespace LAM.BotFramework.ServiceConnectors
             }
             catch (Exception ex)
             {
-                Console.WriteLine(string.Format("Failed renewing access token. Details: {0}", ex.Message));
+                Console.WriteLine($"Failed renewing access token. Details: {ex.Message}");
             }
             finally
             {
@@ -83,14 +84,14 @@ namespace LAM.BotFramework.ServiceConnectors
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(string.Format("Failed to reschedule the timer to renew access token. Details: {0}", ex.Message));
+                    Console.WriteLine($"Failed to reschedule the timer to renew access token. Details: {ex.Message}");
                 }
             }
         }
-        private AdmAccessToken HttpPost(string DatamarketAccessUri, string requestDetails)
+        private AdmAccessToken HttpPost(string datamarketAccessUri, string requestDetails)
         {
             //Prepare OAuth request 
-            WebRequest webRequest = WebRequest.Create(DatamarketAccessUri);
+            WebRequest webRequest = WebRequest.Create(datamarketAccessUri);
             webRequest.ContentType = "application/x-www-form-urlencoded";
             webRequest.Method = "POST";
             byte[] bytes = Encoding.ASCII.GetBytes(requestDetails);

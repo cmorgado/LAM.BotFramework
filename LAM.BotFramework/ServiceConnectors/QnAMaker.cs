@@ -12,7 +12,7 @@ namespace LAM.BotFramework.ServiceConnectors
     /// </summary>
     public class QnAMaker
     {
-        const string QnAMakerURL = "https://westus.api.cognitive.microsoft.com/qnamaker/v1.0";
+        const string QnAMakerUrl = "https://westus.api.cognitive.microsoft.com/qnamaker/v1.0";
         public static QnAMakerResult Get(string knowledgebaseId, string qnamakerSubscriptionKey, string Query)
         {
             string responseString = string.Empty;
@@ -21,10 +21,9 @@ namespace LAM.BotFramework.ServiceConnectors
             try
             {
                 //Build the URI
-                Uri qnamakerUriBase = new Uri(QnAMakerURL);
+                Uri qnamakerUriBase = new Uri(QnAMakerUrl);
                 var builder = new UriBuilder($"{qnamakerUriBase}/knowledgebases/{knowledgebaseId}/generateAnswer");
-                QQ q = new QQ();
-                q.question = Query;
+                QQ q = new QQ {question = Query};
                 var postBody = JsonConvert.SerializeObject(q);
                 //var postBody = $"{{\"question\": \"{Query}\"}}";
                 //Send the POST request
@@ -41,9 +40,11 @@ namespace LAM.BotFramework.ServiceConnectors
             }
             catch (Exception EQ)
             {
-                response = new QnAMakerResult();
-                response.Score = 50;
-                response.Answer = "Error:" + EQ.Message;
+                response = new QnAMakerResult
+                {
+                    Score = 50,
+                    Answer = "Error:" + EQ.Message
+                };
             }
 
             return response;

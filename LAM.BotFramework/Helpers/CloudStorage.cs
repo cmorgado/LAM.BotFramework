@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage.Table;
+﻿using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -13,15 +12,15 @@ namespace LAM.BotFramework.Helpers
     /// </summary>
     public static class CloudStorage
     {
-        public static CloudTableClient GetTableClient(string Key)
+        public static CloudTableClient GetTableClient(string key)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting(Key));
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting(key));
             return storageAccount.CreateCloudTableClient();
         }
 
-        public static CloudBlobClient GetBlobClient(string Key)
+        public static CloudBlobClient GetBlobClient(string key)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting(Key));
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting(key));
             return storageAccount.CreateCloudBlobClient();
         }
         public static string GetBlobFile(CloudBlobContainer container, string file)

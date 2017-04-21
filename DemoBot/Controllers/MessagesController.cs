@@ -2,12 +2,12 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using LAM.BotFramework.Dialogs;
+using LAM.BotFramework.Helpers;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
-using LAM.BotFramework.Helpers;
-using LAM.BotFramework.Dialogs;
 
-namespace DemoBot
+namespace DemoBot.Controllers
 {
     [BotAuthentication]
     public class MessagesController : ApiController

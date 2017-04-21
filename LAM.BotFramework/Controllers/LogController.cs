@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
+using LAM.BotFramework.Code;
+using LAM.BotFramework.Models;
 
 namespace LAM.BotFramework.Controllers
 {
@@ -14,67 +16,63 @@ namespace LAM.BotFramework.Controllers
         /// <summary>
         /// Retrieves the statistics for the Scenario, beware it's memory intensive
         /// </summary>
-        /// <param name="Scenario"></param>
-        /// <param name="DateStart"></param>
-        /// <param name="DateFinish"></param>
+        /// <param name="scenario"></param>
+        /// <param name="dateStart"></param>
+        /// <param name="dateFinish"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("api/LAM/LoadScenario")]
-        public List<KeyValuePair<int, int>> LoadScenario(string Scenario, string DateStart, string DateFinish)
+        public List<KeyValuePair<int, int>> LoadScenario(string scenario, string dateStart, string dateFinish)
         {
-            IEnumerable<ConversationLog> CL = ConversationLog.LoadScenario(Global.tableLog, Scenario);
+            IEnumerable<ConversationLog> cl = ConversationLog.LoadScenario(Global.TableLog, scenario);
 
-            int[] A = new int[500];
-            foreach (ConversationLog item in CL)
+            int[] a = new int[500];
+            foreach (ConversationLog item in cl)
             {
                 if ((item.Origin == "USER") && (item.CurrentQuestion > -1))
-                    A[item.CurrentQuestion]++;
+                    a[item.CurrentQuestion]++;
             }
-            List<KeyValuePair<int, int>> LII = new List<KeyValuePair<int, int>>();
-            for (int i = 0; i < A.Length; i++)
+            List<KeyValuePair<int, int>> lii = new List<KeyValuePair<int, int>>();
+            for (int i = 0; i < a.Length; i++)
             {
-                if (A[i] != 0)
-                    LII.Add(new KeyValuePair<int, int>(i, A[i]));
+                if (a[i] != 0)
+                    lii.Add(new KeyValuePair<int, int>(i, a[i]));
             }
-            return LII;
+            return lii;
         }
 
         /// <summary>
         /// Returns the most recent Scenario definition
         /// </summary>
-        /// <param name="Scenario"></param>
+    /// <param name="scenarioName"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("api/LAM/LoadDefinition")]
-        public string LoadDefinition(string ScenarioName)
+        public string LoadDefinition(string scenarioName)
         {
-            return Scenario.LoadRecentScenario(ScenarioName);
+            return Scenario.LoadRecentScenario(scenarioName);
         }
 
         /// <summary>
         /// Saves the Scenario
         /// </summary>
-        /// <param name="JSON"></param>
+        /// <param name="json"></param>
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/LAM/SaveDefinition")]
-        public string SaveDefinition([FromBody]PostScenario JSON)
+        public string SaveDefinition([FromBody]PostScenario json)
         {
-            if (JSON != null)
+            if (json != null)
             {
-                Scenario S = new Scenario();
+                Scenario s = new Scenario
+                {
+                    Definition = json.Definition,
+                    Version = json.Version
+                };
 
-                S.Definition = JSON.Definition;
-                S.Version = JSON.Version;
-                Task T = S.SaveAsync(JSON.Scenario);
+                Task T = s.SaveAsync(json.Scenario);
             }
             return "";
         }
-    }
-    public class PostScenario
-    {
-        public string Definition { get; set; }
-        public string Version { get; set; }
-        public string Scenario { get; set; }
     }
 }

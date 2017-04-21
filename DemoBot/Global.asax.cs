@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
+using LAM.BotFramework.Code;
 
 namespace DemoBot
 {
@@ -8,7 +9,7 @@ namespace DemoBot
         protected void Application_Start()
         {
             #region LAM.BotFramework
-            Task T = LAM.BotFramework.Global.Initialization();
+            Task T = Global.Initialization();
             T.Wait();
             #endregion
 

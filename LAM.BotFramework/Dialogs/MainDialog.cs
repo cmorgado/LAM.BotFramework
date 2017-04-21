@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using LAM.BotFramework.Code;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
 using LAM.BotFramework.Entities;
@@ -20,9 +21,9 @@ namespace LAM.BotFramework.Dialogs
 
         public async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)
         {
-            IMessageActivity A = await argument;
-            string JSon = Scenario.LoadRecentScenario(Global.ScenarioName);
-            if (string.IsNullOrEmpty(JSon))
+            IMessageActivity argumentaMessageActivity = await argument;
+            string json = Scenario.LoadRecentScenario(Global.ScenarioName);
+            if (string.IsNullOrEmpty(json))
             {
                 var reply = context.MakeMessage();
                 reply.Text = "No scenario definition:" + Global.ScenarioName;
@@ -30,8 +31,8 @@ namespace LAM.BotFramework.Dialogs
             }
             else
             {
-                Question Q = new Question(context);
-                await Q.Initialize(JSon, A.Text);
+                Question question = new Question(context);
+                await question.Initialize(json, argumentaMessageActivity.Text);
             }
         }
     }

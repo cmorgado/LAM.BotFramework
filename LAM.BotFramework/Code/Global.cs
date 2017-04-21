@@ -1,28 +1,24 @@
-﻿using LAM.BotFramework.Entities;
+﻿using System.Threading.Tasks;
+using LAM.BotFramework.Entities;
 using LAM.BotFramework.Helpers;
 using LAM.BotFramework.ServiceConnectors;
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage.Table;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LAM.BotFramework
+namespace LAM.BotFramework.Code
 {
     public static partial class Global
     {
-        public static CloudTable tableLog;
-        public static CloudTable tableScenario;
-        public static AdmAuthentication admAuth=null;
+        public static CloudTable TableLog;
+        public static CloudTable TableScenario;
+        public static AdmAuthentication AdmAuth=null;
         public static bool TranslationEnabled = false;
         public static string ScenarioName = "";
         public static string PragmaOpen = "#!";
         public static string PragmaClose = "!#";
-        public static string DebugServicesURL;
+        public static string DebugServicesUrl;
 
-        public async static Task Initialization()
+        public static async Task Initialization()
         {
             string storageConnectionString = "LAMBF.StorageConnectionString";
             string scenarioTableName = CloudConfigurationManager.GetSetting("LAMBF.ScenarioTableName");
@@ -30,9 +26,9 @@ namespace LAM.BotFramework
             string conversationLogTableName = CloudConfigurationManager.GetSetting("LAMBF.LogTableName");
             await Initialization(storageConnectionString, scenarioTableName, scenarioName, conversationLogTableName);
         }
-        public async static Task Initialization(string storageConnectionString, string scenarioTableName, string scenarioName, string conversationLogTableName)
+        public static async Task Initialization(string storageConnectionString, string scenarioTableName, string scenarioName, string conversationLogTableName)
         {
-            Global.DebugServicesURL = CloudConfigurationManager.GetSetting("LAMBF.DebugServicesURL");
+            Global.DebugServicesUrl = CloudConfigurationManager.GetSetting("LAMBF.DebugServicesURL");
 
             ScenarioName = scenarioName;
 
@@ -42,15 +38,15 @@ namespace LAM.BotFramework
             await ConversationLog.GetTableReference(tableClient, conversationLogTableName).CreateIfNotExistsAsync();
             await Scenario.GetTableReference(tableClient, scenarioTableName).CreateIfNotExistsAsync();
 
-            tableLog = ConversationLog.GetTableReference(tableClient, conversationLogTableName);
-            tableScenario = Scenario.GetTableReference(tableClient, scenarioTableName);
+            TableLog = ConversationLog.GetTableReference(tableClient, conversationLogTableName);
+            TableScenario = Scenario.GetTableReference(tableClient, scenarioTableName);
 
             //INIT TRANSLATOR
-            string TranslateClientId = CloudConfigurationManager.GetSetting("LAMBF.TranslateClientId");
-            string TranslateSecret = CloudConfigurationManager.GetSetting("LAMBF.TranslateSecret");
-            if (!string.IsNullOrEmpty(TranslateClientId))
+            string translateClientId = CloudConfigurationManager.GetSetting("LAMBF.TranslateClientId");
+            string translateSecret = CloudConfigurationManager.GetSetting("LAMBF.TranslateSecret");
+            if (!string.IsNullOrEmpty(translateClientId))
             {
-                Global.admAuth = new AdmAuthentication(TranslateClientId, TranslateSecret);
+                Global.AdmAuth = new AdmAuthentication(translateClientId, translateSecret);
                 Global.TranslationEnabled = true; 
             }
 

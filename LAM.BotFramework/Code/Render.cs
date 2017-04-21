@@ -1,12 +1,12 @@
-﻿using LAM.BotFramework.ServiceConnectors;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using LAM.BotFramework.ServiceConnectors;
 using Microsoft.Azure.Search.Models;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace LAM.BotFramework
+namespace LAM.BotFramework.Code
 {
     public class Render
     {

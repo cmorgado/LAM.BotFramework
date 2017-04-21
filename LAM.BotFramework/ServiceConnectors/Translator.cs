@@ -2,12 +2,13 @@
 using System.IO;
 using System.Net;
 using System.Runtime.Serialization;
+using LAM.BotFramework.Code;
 
 namespace LAM.BotFramework.ServiceConnectors
 {
     public class Translator
     {
-        const string TranslatorServiceURL = "http://api.microsofttranslator.com/v2/Http.svc/Translate?text=";
+        const string TranslatorServiceUrl = "http://api.microsofttranslator.com/v2/Http.svc/Translate?text=";
         public static string GetToken()
         {
             if (Global.TranslationEnabled)
@@ -15,7 +16,7 @@ namespace LAM.BotFramework.ServiceConnectors
                 try
                 {
                     // Create a header with the access_token property of the returned token
-                    AdmAccessToken admToken = Global.admAuth.GetAccessToken();
+                    AdmAccessToken admToken = Global.AdmAuth.GetAccessToken();
                     return "Bearer " + admToken.access_token;
                 }
                 catch (Exception e)
@@ -43,7 +44,7 @@ namespace LAM.BotFramework.ServiceConnectors
                 response = httpWebRequest.GetResponse();
                 using (Stream stream = response.GetResponseStream())
                 {
-                    System.Runtime.Serialization.DataContractSerializer dcs = new System.Runtime.Serialization.DataContractSerializer(Type.GetType("System.String"));
+                    DataContractSerializer dcs = new DataContractSerializer(Type.GetType("System.String"));
                     languageDetected = (string)dcs.ReadObject(stream);
                 }
             }
@@ -74,7 +75,7 @@ namespace LAM.BotFramework.ServiceConnectors
             {
                 string translation = "";
                 //Keep appId parameter blank as we are sending access token in authorization header.
-                string uri = TranslatorServiceURL + System.Uri.EscapeDataString(textToTranslate) + "&from=" + languageFrom + "&to=" + languageTo;
+                string uri = TranslatorServiceUrl + Uri.EscapeDataString(textToTranslate) + "&from=" + languageFrom + "&to=" + languageTo;
                 HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(uri);
                 httpWebRequest.Headers.Add("Authorization", authToken);
                 WebResponse response = null;

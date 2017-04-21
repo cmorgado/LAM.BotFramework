@@ -1,10 +1,5 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Connector;
-using System;
+﻿using Microsoft.Bot.Connector;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LAM.BotFramework.Entities
 {

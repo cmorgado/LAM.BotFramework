@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.WindowsAzure.Storage;
 using System.Threading.Tasks;
@@ -38,17 +37,17 @@ namespace LAM.BotFramework.Entities
             return result.Result as T;
         }
 
-        public virtual void Save(CloudTable _table)
+        public virtual void Save(CloudTable table)
         {
             SetKeys();
             TableOperation insertOperation = TableOperation.InsertOrReplace(this);
-            _table.Execute(insertOperation);
+            table.Execute(insertOperation);
         }
-        public virtual void SaveAsync(CloudTable _table)
+        public virtual void SaveAsync(CloudTable table)
         {
             SetKeys();
             TableOperation insertOperation = TableOperation.InsertOrReplace(this);
-            _table.ExecuteAsync(insertOperation);
+            table.ExecuteAsync(insertOperation);
         }
 
         public virtual Task<TableResult> MergeAsync(CloudTable table)
@@ -57,7 +56,7 @@ namespace LAM.BotFramework.Entities
             return table.ExecuteAsync(TableOperation.InsertOrMerge(this));
         }
 
-        async public static Task<bool> SaveAsync(CloudTable table, IEnumerable<BaseEntity> items)
+        public static async Task<bool> SaveAsync(CloudTable table, IEnumerable<BaseEntity> items)
         {
             TableBatchOperation batch = new TableBatchOperation();
 

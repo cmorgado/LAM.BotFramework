@@ -1,7 +1,7 @@
 ﻿using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using LAM.BotFramework.Code;
 
 namespace LAM.BotFramework.Entities
 {
@@ -21,52 +21,54 @@ namespace LAM.BotFramework.Entities
         public int CurrentQuestion { get; set; }
         #endregion
 
-        private const string TABLE_NAME = "BotLog";
+        private const string TableName = "BotLog";
         public static CloudTable GetTableReference(CloudTableClient client)
         {
-            return client.GetTableReference(TABLE_NAME);
+            return client.GetTableReference(TableName);
         }
         public override void SetKeys()
         {
-            this.PartitionKey = ConversationID;
-            this.RowKey = DateTime.Now.Ticks.ToString();
+            PartitionKey = ConversationID;
+            RowKey = DateTime.Now.Ticks.ToString();
         }
 
-        public static IEnumerable<ConversationLog> LoadAll(CloudTable table, string conversationID)
+        public static IEnumerable<ConversationLog> LoadAll(CloudTable table, string conversationId)
         {
             var query = new TableQuery<ConversationLog>().Where(
-                    TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, conversationID)
+                    TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, conversationId)
                 );
             return table.ExecuteQuery(query);
         }
-        public static IEnumerable<ConversationLog> LoadScenario(CloudTable table, string Scenario)
+        public static IEnumerable<ConversationLog> LoadScenario(CloudTable table, string scenario)
         {
             var query = new TableQuery<ConversationLog>().Where(
-                    TableQuery.GenerateFilterCondition("Scenario", QueryComparisons.Equal, Scenario)
+                    TableQuery.GenerateFilterCondition("Scenario", QueryComparisons.Equal, scenario)
                 );
             return table.ExecuteQuery(query);
         }
 
-        public static void Log(Microsoft.Bot.Builder.Dialogs.IDialogContext context, string origin, string message, string Scenario, int CurrentQuestion)
+        public static void Log(Microsoft.Bot.Builder.Dialogs.IDialogContext context, string origin, string message, string scenario, int currentQuestion)
         {
             var replyD = context.MakeMessage();
-            LogWithID(replyD.ChannelId, replyD.Conversation.Id, origin, message, Scenario, CurrentQuestion);
+            LogWithId(replyD.ChannelId, replyD.Conversation.Id, origin, message, scenario, currentQuestion);
         }
-        public static void LogWithID(string channelId, string conversationId, string origin, string message, int CurrentQuestion)
+        public static void LogWithId(string channelId, string conversationId, string origin, string message, int currentQuestion)
         {
-            LogWithID(channelId, conversationId, origin, message, Global.ScenarioName, CurrentQuestion);
+            LogWithId(channelId, conversationId, origin, message, Global.ScenarioName, currentQuestion);
         }
-        public static void LogWithID(string channelId, string conversationId, string origin, string message, string Scenario, int CurrentQuestion)
+        public static void LogWithId(string channelId, string conversationId, string origin, string message, string scenario, int currentQuestion)
         {
-            if (Global.tableLog != null)
+            if (Global.TableLog != null)
             {
-                ConversationLog CL = new ConversationLog();
-                CL.ConversationID = channelId + "." + conversationId;
-                CL.Origin = origin;
-                CL.Text = message;
-                CL.CurrentQuestion = CurrentQuestion;
-                CL.Scenario = Scenario;
-                CL.Save(Global.tableLog);
+                ConversationLog cl = new ConversationLog
+                {
+                    ConversationID = channelId + "." + conversationId,
+                    Origin = origin,
+                    Text = message,
+                    CurrentQuestion = currentQuestion,
+                    Scenario = scenario
+                };
+                cl.Save(Global.TableLog);
             }
         }
     }

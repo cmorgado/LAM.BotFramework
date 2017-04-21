@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LAM.BotFramework.Code;
 
 namespace LAM.BotFramework.Entities
 {
@@ -19,26 +20,26 @@ namespace LAM.BotFramework.Entities
 
         public virtual void Save(string name)
         {
-            this.PartitionKey = name;
-            this.RowKey = this.Version;
+            PartitionKey = name;
+            RowKey = Version;
             TableOperation insertOperation = TableOperation.InsertOrReplace(this);
-            Global.tableScenario.Execute(insertOperation);
+            Global.TableScenario.Execute(insertOperation);
         }
         public Task SaveAsync(string name)
         {
-            this.PartitionKey = name;
-            this.RowKey = this.Version;
+            PartitionKey = name;
+            RowKey = Version;
             TableOperation insertOperation = TableOperation.InsertOrReplace(this);
-            return Global.tableScenario.ExecuteAsync(insertOperation);
+            return Global.TableScenario.ExecuteAsync(insertOperation);
         }
         public static string LoadRecentScenario(string name)
         {
             var query = new TableQuery<Scenario>().Where(
                     TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, name)
                 );
-            IEnumerable<Scenario> ICL = Global.tableScenario.ExecuteQuery(query);
-            if (ICL.Count() > 0)
-                return ICL.First().Definition;
+            IEnumerable<Scenario> icl = Global.TableScenario.ExecuteQuery(query);
+            if (icl.Any())
+                return icl.First().Definition;
             else
                 return "";
         }

@@ -4,6 +4,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using LAM.BotFramework.Code;
 
 namespace LAM.BotFramework.ServiceConnectors
 {
@@ -12,19 +13,18 @@ namespace LAM.BotFramework.ServiceConnectors
         /// <summary>
         /// Transfer Full State
         /// </summary>
-        /// <param name="URL"></param>
+        /// <param name="url"></param>
         /// <param name="postData"></param>
         /// <returns></returns>
-        public static async Task<BotProps> Post(string URL, BotProps postData)
+        public static async Task<BotProps> Post(string url, BotProps postData)
         {
-            Uri U = new Uri(URL);
-            if (!string.IsNullOrEmpty(Global.DebugServicesURL ))
+            Uri U = new Uri(url);
+            if (!string.IsNullOrEmpty(Global.DebugServicesUrl ))
             {
-                U = new Uri(URL.Replace(U.AbsolutePath, Global.DebugServicesURL));
+                U = new Uri(url.Replace(U.AbsolutePath, Global.DebugServicesUrl));
             }
             string s = U.PathAndQuery;
-            HttpClient client = new HttpClient();
-            client.BaseAddress = U;
+            HttpClient client = new HttpClient {BaseAddress = U};
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -34,21 +34,23 @@ namespace LAM.BotFramework.ServiceConnectors
             BotProps BP = await response.Content.ReadAsAsync<BotProps>();
             return BP;
         }
+
         /// <summary>
         /// Rest Call, should receive a Dictionary<string,string>
         /// </summary>
-        /// <param name="URL"></param>
+        /// <param name="url"></param>
+        /// <param name="debugable"></param>
         /// <returns></returns>
-        public static async Task<string> Get(string URL, bool Debugable)
+        public static async Task<string> Get(string url, bool debugable)
         {
             HttpClient client = new HttpClient();
-            if (Debugable && !string.IsNullOrEmpty(Global.DebugServicesURL))
+            if (debugable && !string.IsNullOrEmpty(Global.DebugServicesUrl))
             {
-                Uri U = new Uri(URL);
-                int p = URL.IndexOf(U.Host) + U.Host.Length;
-                URL = Global.DebugServicesURL + URL.Substring(p);
+                Uri u = new Uri(url);
+                int p = url.IndexOf(u.Host) + u.Host.Length;
+                url = Global.DebugServicesUrl + url.Substring(p);
             }
-            return await client.GetStringAsync(URL);
+            return await client.GetStringAsync(url);
         }
     }
 }
